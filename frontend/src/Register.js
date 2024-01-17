@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+
 const Register = () => {
   const [organizationType, setOrganizationType] = useState('');
   const [organizationName, setOrganizationName] = useState('');
@@ -24,7 +25,7 @@ const Register = () => {
         Confirm_Password: confirmPassword,
       });
 
-      console.log(response.data); // Handle the response accordingly, e.g., display a success message, redirect, etc.
+      console.log(response); // Handle the response accordingly, e.g., display a success message, redirect, etc.
     } catch (error) {
       console.error('Error during registration:', error.response.data);
       // Handle the error, e.g., display an error message to the user
@@ -111,5 +112,6 @@ const Register = () => {
     </div>
   );
 };
+
 
 export default Register;

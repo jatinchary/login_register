@@ -3,9 +3,15 @@ const app = express();
 const port = 8000;
 const connectDB = require("./mongoDB/mongodb");
 const User = require('./mongoDB/user');
+const cors=require('cors')
 
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200
+}
 
 app.use(express.json()); // middleware for passing JSON
+app.use(cors(corsOptions))
 
 connectDB();
 
@@ -58,34 +64,33 @@ app.use('/api', router); // Use the router with a base path
 // });
 
 router.post('/register', async (req, res) => {
+    const {
+        Select_your_organization_type,
+        Name_of_your_organization,
+        PAN_Card,
+        Email_ID,
+        Phone_number,
+        Password,
+        Confirm_Password
+    } = req.body;
+
+    // Check if passwords match
+    if (Password !== Confirm_Password) {
+        return res.status(400).json({ error: "Passwords don't match" });
+    }
+
     try {
-        const {
-            organizationType,
-            organizationName,
-            panCard,
-            email,
-            phoneNumber,
-            password,
-            confirmPassword,
-        } = req.body;
-
-        // Check if passwords match
-        if (password !== confirmPassword) {
-            return res.status(400).json({ error: "Passwords don't match" });
-        }
-
-        // Create a new organization instance
-        const newOrganization = new Organization({
-            organizationType,
-            organizationName,
-            panCard,
-            email,
-            phoneNumber,
-            password,
-        });
-
-        // Save the organization to the database
-        await newOrganization.save();
+        
+        //Saving the Organization to db
+        const newOrganization= await User.create({
+            Select_your_organization_type,
+            Name_of_your_organization,
+            PAN_Card,
+            Email_ID,
+            Phone_number,
+            Password,
+            Confirm_Password
+        })
 
         // Respond with a success message
         res.status(201).json({ message: 'Organization registered successfully' });
@@ -115,9 +120,26 @@ router.post('/login', async (req, res) => {
 
         // Respond with a success message or a token for authentication
         res.status(200).json({ message: 'Login successful' });
+        // res.redirect('/api/profile')
     } catch (error) {
         // Handle any errors that occur during login
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
+
+//UserInfo route
+
+router.post('/profile',async(req,res)=>{
+    const {Email_ID}=req.body;
+    try{
+        const currentUser=await User.findOne({Email_ID:Email_ID})
+        if(!currentUser) return res.json({msg:"User not found"})
+        res.json(currentUser)
+    }
+    catch{
+        res.sendStatus(500)
+    }
+})
