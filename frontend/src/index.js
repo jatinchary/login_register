@@ -3,11 +3,23 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {RouterProvider,createBrowserRouter,Route,createRoutesFromElements} from 'react-router-dom'
+import Profile from './Profile';
+import RouteHandler from './RouteHandler';
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<RouteHandler/>}>
+      <Route path='' element={<App/>}/>
+      <Route path='api/profile' element={<Profile/>}/>
+    </Route>
+  )
+);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router}/>
   </React.StrictMode>
 );
 
